@@ -20,16 +20,29 @@ jobs:
       run: npm install -g @google/clasp
       
     - name: Create clasprc.json
-      run: echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+      run: |
+        echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+        cat ~/.clasprc.json | grep "client_id" || echo "clasprc.json seems to be invalid"
     
-    - name: Update clasp.json with Script ID
-      run: sed -i 's/SCRIPT_ID_PLACEHOLDER/${{ secrets.SCRIPT_ID }}/g' clasp.json
+    - name: Create clasp.json directly
+      run: |
+        echo '{
+          "scriptId": "${{ secrets.SCRIPT_ID }}",
+          "rootDir": "./src"
+        }' > clasp.json
+        cat clasp.json
     
-    - name: List files
-      run: ls -la
+    - name: Display directory structure
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Files in current directory:"
+        ls -la
+        echo "Files in src directory:"
+        ls -la src
     
-    - name: List src directory
-      run: ls -la src
+    - name: Test clasp login status
+      run: clasp login --status || echo "Not logged in"
       
     - name: Deploy with Clasp
-      run: clasp push -f
+      run: clasp push -f --json
