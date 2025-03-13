@@ -26,10 +26,7 @@ jobs:
     
     - name: Create clasp.json directly
       run: |
-        echo '{
-          "scriptId": "${{ secrets.SCRIPT_ID }}",
-          "rootDir": "./src"
-        }' > clasp.json
+        echo '{"scriptId": "${{ secrets.SCRIPT_ID }}", "rootDir": "./src"}' > clasp.json
         cat clasp.json
     
     - name: Display directory structure
@@ -44,5 +41,5 @@ jobs:
     - name: Test clasp login status
       run: clasp login --status || echo "Not logged in"
       
-　　　- name: Deploy with Clasp
- 　　　 run: clasp push -f
+    - name: Deploy with Clasp
+      run: clasp push -f
