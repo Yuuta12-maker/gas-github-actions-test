@@ -3,7 +3,7 @@ Google Apps Scriptプロジェクトの自動デプロイテスト用リポジ�
 
 ## 機能
 - GitHub Actionsを使用した自動デプロイ
-- コード変更時に自動的にGASプロジェクトに反映
+- コード変更時に自動的にGASプロジェクトに
 
 ## 設定方法
 1. GitHub Secretsに認証情報を保存
