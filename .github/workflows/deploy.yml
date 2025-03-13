@@ -19,46 +19,20 @@ jobs:
     - name: Install Clasp
       run: npm install -g @google/clasp
       
-    - name: Create clasprc.json
-      run: |
-        echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
-        cat ~/.clasprc.json | grep "client_id" || echo "clasprc.json seems to be invalid"
-    
-    - name: Debug Script ID
-      run: |
-        echo "Script ID value length: ${#SCRIPT_ID}"
-        if [ -z "$SCRIPT_ID" ]; then
-          echo "WARNING: Script ID is empty!"
-        else
-          echo "Script ID appears to be set"
-        fi
-      env:
-        SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
-      
-    - name: Create clasp.json directly
-      run: |
-        echo '{"scriptId":"${{ secrets.SCRIPT_ID }}","rootDir":"./src"}' > clasp.json
-        echo "clasp.json contents:"
-        cat clasp.json
-        echo "JSON validation:"
-        cat clasp.json | jq || echo "Invalid JSON!"
-    
-    - name: Display directory structure
+    - name: Debug environment
       run: |
         echo "Current directory: $(pwd)"
-        echo "Files in current directory:"
         ls -la
-        echo "Files in src directory:"
-        ls -la src
-        echo "Checking if clasp.json exists in current dir:"
-        test -f clasp.json && echo "Found!" || echo "Not found!"
-    
-    - name: Try clasp commands
-      run: |
-        echo "Checking clasp version:"
-        clasp --version
-        echo "Checking clasp login status:"
-        clasp login --status || echo "Not logged in"
         
-    - name: Deploy with Clasp (verbose)
-      run: clasp push -f --verbose
+    - name: Setup authentication
+      run: |
+        echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+        clasp login --status
+        
+    - name: Setup script ID
+      run: |
+        echo '{"scriptId":"${{ secrets.SCRIPT_ID }}","rootDir":"src"}' > clasp.json
+        cat clasp.json
+        
+    - name: Push to Apps Script
+      run: clasp push
