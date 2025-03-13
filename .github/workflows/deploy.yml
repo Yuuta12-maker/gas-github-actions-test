@@ -21,6 +21,15 @@ jobs:
       
     - name: Create clasprc.json
       run: echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+    
+    - name: Update clasp.json with Script ID
+      run: sed -i 's/SCRIPT_ID_PLACEHOLDER/${{ secrets.SCRIPT_ID }}/g' clasp.json
+    
+    - name: List files
+      run: ls -la
+    
+    - name: List src directory
+      run: ls -la src
       
     - name: Deploy with Clasp
       run: clasp push -f
