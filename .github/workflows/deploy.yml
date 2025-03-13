@@ -17,23 +17,41 @@ jobs:
         node-version: '16'
         
     - name: Install Clasp
-      run: npm install -g @google/clasp
+      run: |
+        npm install -g @google/clasp
+        clasp --version
+      
+    - name: Debug SCRIPT_ID
+      run: |
+        echo "SCRIPT_ID length: ${#SCRIPT_ID}"
+        echo "SCRIPT_ID first 5 chars: ${SCRIPT_ID:0:5}..."
+      env:
+        SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
       
     - name: Setup authentication
       run: |
         echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+        grep -q "token" ~/.clasprc.json && echo "Token found in clasprc.json" || echo "No token in clasprc.json"
         
-    - name: Setup script ID
+    - name: Setup script ID with absolute path
       run: |
-        echo '{"scriptId":"${{ secrets.SCRIPT_ID }}","rootDir":"src"}' > clasp.json
-        cat clasp.json
+        pwd
+        echo '{"scriptId":"${{ secrets.SCRIPT_ID }}","rootDir":"./src"}' > "$(pwd)/clasp.json"
+        cat "$(pwd)/clasp.json"
         
-    - name: Display directory structure
+    - name: List files in current directory
+      run: find . -type f | sort
+        
+    - name: Try different clasp commands
       run: |
-        echo "Current directory: $(pwd)"
-        ls -la
-        echo "Files in src directory:"
-        ls -la src
+        echo "Trying clasp projects..."
+        clasp projects || echo "Failed to list projects"
         
-    - name: Push to Apps Script
-      run: clasp push -f
+    - name: Push to Apps Script with full paths
+      run: |
+        CLASPRC_PATH=~/.clasprc.json
+        CLASP_JSON_PATH="$(pwd)/clasp.json"
+        echo "Using config files:"
+        echo "CLASPRC: $CLASPRC_PATH"
+        echo "CLASP.JSON: $CLASP_JSON_PATH"
+        cd "$(pwd)" && clasp push -f || echo "Push failed with exit code $?"
