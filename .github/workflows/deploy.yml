@@ -19,20 +19,21 @@ jobs:
     - name: Install Clasp
       run: npm install -g @google/clasp
       
-    - name: Debug environment
-      run: |
-        echo "Current directory: $(pwd)"
-        ls -la
-        
     - name: Setup authentication
       run: |
         echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
-        clasp login --status
         
     - name: Setup script ID
       run: |
         echo '{"scriptId":"${{ secrets.SCRIPT_ID }}","rootDir":"src"}' > clasp.json
         cat clasp.json
         
+    - name: Display directory structure
+      run: |
+        echo "Current directory: $(pwd)"
+        ls -la
+        echo "Files in src directory:"
+        ls -la src
+        
     - name: Push to Apps Script
-      run: clasp push
+      run: clasp push -f
