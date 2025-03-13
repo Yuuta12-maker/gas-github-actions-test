@@ -44,5 +44,5 @@ jobs:
     - name: Test clasp login status
       run: clasp login --status || echo "Not logged in"
       
-    - name: Deploy with Clasp
-      run: clasp push -f --json
+　　- name: Deploy with Clasp
+ 　　 run: clasp push -f
